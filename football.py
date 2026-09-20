@@ -4,7 +4,8 @@ from datetime import datetime
 import streamlit as st
 import pandas as pd
 
-st.dataframe(tabla, use_container_width=True, height=600)
+st.set_page_config(layout="wide")
+
 dias_semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
 
 st.title("Resultados La Liga")
@@ -82,6 +83,8 @@ if tipo_busqueda == "Por jornada":
                 "Escudo Visitante": st.column_config.ImageColumn(" ")
             },
             hide_index=True
+            use_container_width=True,
+            height=600
         )
 
 
@@ -137,6 +140,8 @@ elif tipo_busqueda == "Por equipo":
                 "Escudo Visitante": st.column_config.ImageColumn(" ")
             },
             hide_index=True
+            use_container_width=True,
+            height=600
         )
 
 
@@ -171,6 +176,8 @@ elif tipo_busqueda == "Clasificación":
             "Escudo": st.column_config.ImageColumn(" ")
         },
         hide_index=True
+        use_container_width=True,
+        height=600
     )
     st.subheader("Puntos por equipo")
 
