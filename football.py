@@ -80,11 +80,22 @@ with tab1:
             height=600
         )
 
+equipo_favorito = "Real Madrid"
+
 with tab2:
     nombres_equipos = sorted([equipo["team"]["name"] for equipo in tabla_posiciones_completa])
-    equipo_buscado = st.selectbox("¿De qué equipo quieres ver los resultados?", nombres_equipos)
 
-    if st.button("Buscar", key="buscar_equipo"):
+    indice_favorito = nombres_equipos.index(equipo_favorito) if equipo_favorito in nombres_equipos else 0
+
+    equipo_buscado = st.selectbox(
+        "¿De qué equipo quieres ver los resultados?",
+        nombres_equipos,
+        index=indice_favorito
+    )
+
+    buscar = st.button("Buscar", key="buscar_equipo") or equipo_buscado == equipo_favorito
+    
+    if buscar:
         filas = []
 
         for partido in partidos:
