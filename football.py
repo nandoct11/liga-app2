@@ -126,12 +126,12 @@ with tab1:
                     resultado = "Fecha provisional"
 
                 filas.append({
-                    "Fecha": fecha_legible,
                     "Escudo Local": escudo_local,
                     "Local": equipo_local,
                     "Resultado": resultado,
                     "Visitante": equipo_visitante,
-                    "Escudo Visitante": escudo_visitante
+                    "Escudo Visitante": escudo_visitante,
+                    "Fecha": fecha_legible
                 })
 
         tabla = pd.DataFrame(filas)
@@ -189,12 +189,12 @@ with tab2:
 
                 filas.append({
                     "Jornada": jornada,
-                    "Fecha": fecha_legible,
                     "Escudo Local": escudo_local,
                     "Local": equipo_local,
                     "Resultado": resultado,
                     "Visitante": equipo_visitante,
-                    "Escudo Visitante": escudo_visitante
+                    "Escudo Visitante": escudo_visitante,
+                    "fecha": fecha_legible
                 })
 
         tabla = pd.DataFrame(filas)
