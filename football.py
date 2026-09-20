@@ -67,6 +67,7 @@ with tab1:
             indice_jornada_actual = jornadas_disponibles.index(jornada_actual_cl) if jornada_actual_cl in jornadas_disponibles else 0
             jornada_buscada = st.selectbox(
                 "¿Qué jornada?",
+                jornadas_disponibles,
                 index=indice_jornada_actual,
             )
         else:
