@@ -7,6 +7,15 @@ st.set_page_config(layout="wide")
 
 dias_semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
 
+nombres_fases = {
+    "LEAGUE_STAGE": "Fase de grupos",
+    "PLAYOFFS": "Playoffs",
+    "LAST_16": "Octavos de final",
+    "QUARTER_FINALS": "Cuartos de final",
+    "SEMI_FINALS": "Semifinales",
+    "FINAL": "Final"
+}
+
 st.title("Resultados La Liga")
 
 token = st.secrets["API_TOKEN"]
@@ -39,12 +48,17 @@ def obtener_clasificacion(codigo):
 partidos = obtener_partidos(codigo_competicion)
 tabla_posiciones_completa = obtener_clasificacion(codigo_competicion)
 
+
 tab1, tab2, tab3 = st.tabs(["Por jornada", "Por equipo", "Clasificación"])
 
 with tab1:
     if codigo_competicion == "CL":
         fases_disponibles = sorted(set(partido["stage"] for partido in partidos))
-        fase_elegida = st.selectbox("¿Qué fase quieres ver?", fases_disponibles)
+        fase_elegida = st.selectbox(
+            "¿Qué fase quieres ver?",
+            fases_disponibles,
+            format_func=lambda fase: nombres_fases.get(fase, fase)
+        )
     else:
         jornada_buscada = st.number_input("¿De qué jornada quieres ver los resultados?", min_value=1, max_value=38, step=1)
 
