@@ -170,8 +170,22 @@ elif tipo_busqueda == "Clasificación":
         })
 
     tabla = pd.DataFrame(filas)
+    def colorear_fila(fila):
+        posicion = fila["Pos"]
+        if posicion <= 4:
+            color = "background-color: #1e5631"  # verde oscuro - Champions League
+        elif posicion == 5:
+            color = "background-color: #4a4a1e"  # amarillo oscuro - Europa League
+        elif posicion >= 18:
+            color = "background-color: #5c1e1e"  # rojo oscuro - descenso
+        else:
+            color = ""
+        return [color] * len(fila)
+
+    tabla_coloreada = tabla.style.apply(colorear_fila, axis=1)  # NUEVO
+
     st.dataframe(
-        tabla,
+        tabla_coloreada,
         column_config={
             "Escudo": st.column_config.ImageColumn(" ")
         },
