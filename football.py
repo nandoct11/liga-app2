@@ -150,6 +150,8 @@ with tab3:
     filas = []
 
     for equipo in tabla_posiciones_completa:
+        diferencia_goles = equipo["goalsFor"] - equipo["goalsAgainst"]
+
         filas.append({
             "Pos": equipo["position"],
             "Escudo": equipo["team"]["crest"],
@@ -160,6 +162,7 @@ with tab3:
             "P": equipo["lost"],
             "GF": equipo["goalsFor"],
             "GC": equipo["goalsAgainst"],
+            "DG": diferencia_goles,
             "Pts": equipo["points"]
         })
 
