@@ -82,7 +82,7 @@ if tipo_busqueda == "Por jornada":
                 "Escudo Local": st.column_config.ImageColumn(" "),
                 "Escudo Visitante": st.column_config.ImageColumn(" ")
             },
-            hide_index=True
+            hide_index=True,
             use_container_width=True,
             height=600
         )
@@ -139,7 +139,7 @@ elif tipo_busqueda == "Por equipo":
                 "Escudo Local": st.column_config.ImageColumn(" "),
                 "Escudo Visitante": st.column_config.ImageColumn(" ")
             },
-            hide_index=True
+            hide_index=True,
             use_container_width=True,
             height=600
         )
@@ -175,7 +175,7 @@ elif tipo_busqueda == "Clasificación":
         column_config={
             "Escudo": st.column_config.ImageColumn(" ")
         },
-        hide_index=True
+        hide_index=True,
         use_container_width=True,
         height=600
     )
