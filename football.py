@@ -42,15 +42,24 @@ tabla_posiciones_completa = obtener_clasificacion(codigo_competicion)
 tab1, tab2, tab3 = st.tabs(["Por jornada", "Por equipo", "Clasificación"])
 
 with tab1:
-    jornada_buscada = st.number_input("¿De qué jornada quieres ver los resultados?", min_value=1, max_value=38, step=1)
+    if codigo_competicion == "CL":
+        fases_disponibles = sorted(set(partido["stage"] for partido in partidos))
+        fase_elegida = st.selectbox("¿Qué fase quieres ver?", fases_disponibles)
+    else:
+        jornada_buscada = st.number_input("¿De qué jornada quieres ver los resultados?", min_value=1, max_value=38, step=1)
 
-    if st.button("Buscar", key="buscar_jornada"):
-        st.subheader(f"Jornada {jornada_buscada}")
+if st.button("Buscar", key="buscar_jornada"):
+        if codigo_competicion == "CL":
+            st.subheader(f"Jornada {fase_elegida}")
+        else:
+            st.subheader(f"Jornada {jornada_buscada}")
 
         filas = []
 
         for partido in partidos:
-            if partido["matchday"] == jornada_buscada:
+            coincide = (partido["stage"] == fase_elegida) if codigo_competicion == "CL" else (partido["matchday"] == jornada_buscada)
+
+            if coincide:
                 equipo_local = partido["homeTeam"]["name"]
                 equipo_visitante = partido["awayTeam"]["name"]
                 escudo_local = partido["homeTeam"]["crest"]
@@ -59,8 +68,7 @@ with tab1:
                 goles_visitante = partido["score"]["fullTime"]["away"]
                 estado = partido["status"]
 
-                fecha_original = partido["utcDate"]
-                fecha = datetime.fromisoformat(fecha_original)
+                fecha = datetime.fromisoformat(partido["utcDate"])
                 dia_semana = dias_semana[fecha.weekday()]
                 fecha_legible = f"{dia_semana}, {fecha.strftime('%d/%m/%Y')}"
 
