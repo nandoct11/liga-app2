@@ -4,6 +4,7 @@ from datetime import datetime
 import streamlit as st
 import pandas as pd
 
+st.dataframe(tabla, use_container_width=True, height=600)
 dias_semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
 
 st.title("Resultados La Liga")
@@ -11,20 +12,20 @@ st.title("Resultados La Liga")
 token = "db0a169606a74dad8d77aefbb477156f"
 cabeceras = {"X-Auth-Token": token}
 
-@st.cache_data(ttl=600)  # NUEVO: cachea el resultado 600 segundos (10 minutos)
-def obtener_partidos():  # NUEVO: envolvemos la petición en una función
+@st.cache_data(ttl=600)
+def obtener_partidos():
     respuesta = requests.get("https://api.football-data.org/v4/competitions/PD/matches", headers=cabeceras)
     datos = respuesta.json()
     return datos["matches"]
 
-@st.cache_data(ttl=600)  # NUEVO
-def obtener_clasificacion():  # NUEVO
+@st.cache_data(ttl=600)
+def obtener_clasificacion():
     respuesta = requests.get("https://api.football-data.org/v4/competitions/PD/standings", headers=cabeceras)
     datos = respuesta.json()
     return datos["standings"][0]["table"]
 
-partidos = obtener_partidos()  # NUEVO: llamamos a la función en vez de hacer el requests.get directamente
-tabla_posiciones_completa = obtener_clasificacion()  # NUEVO
+partidos = obtener_partidos()
+tabla_posiciones_completa = obtener_clasificacion()
 
 st.write(f"Partidos totales recibidos: {len(partidos)}")
 
