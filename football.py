@@ -12,20 +12,32 @@ st.title("Resultados La Liga")
 token = st.secrets["API_TOKEN"]
 cabeceras = {"X-Auth-Token": token}
 
+competiciones_disponibles = {
+    "La Liga": "PD",
+    "Champions League": "CL",
+    "Premier League": "PL",
+    "Bundesliga": "BL1",
+    "Serie A": "SA",
+    "Ligue 1": "FL1"
+}
+
+competicion_elegida = st.selectbox("¿Qué competición quieres ver?", list(competiciones_disponibles.keys()))
+codigo_competicion = competiciones_disponibles[competicion_elegida]
+
 @st.cache_data(ttl=600)
-def obtener_partidos():
-    respuesta = requests.get("https://api.football-data.org/v4/competitions/PD/matches", headers=cabeceras)
+def obtener_partidos(codigo):
+    respuesta = requests.get(f"https://api.football-data.org/v4/competitions/{codigo}/matches", headers=cabeceras)
     datos = respuesta.json()
     return datos["matches"]
 
 @st.cache_data(ttl=600)
-def obtener_clasificacion():
-    respuesta = requests.get("https://api.football-data.org/v4/competitions/PD/standings", headers=cabeceras)
+def obtener_clasificacion(codigo):
+    respuesta = requests.get(f"https://api.football-data.org/v4/competitions/{codigo}/standings", headers=cabeceras)
     datos = respuesta.json()
     return datos["standings"][0]["table"]
 
-partidos = obtener_partidos()
-tabla_posiciones_completa = obtener_clasificacion()
+partidos = obtener_partidos(codigo_competicion)
+tabla_posiciones_completa = obtener_clasificacion(codigo_competicion)
 
 tab1, tab2, tab3 = st.tabs(["Por jornada", "Por equipo", "Clasificación"])
 
