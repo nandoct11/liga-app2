@@ -63,9 +63,15 @@ with tab1:
             jornadas_disponibles = sorted(set(
                 partido["matchday"] for partido in partidos if partido["stage"] == "LEAGUE_STAGE"
             ))
-            jornada_buscada = st.selectbox("¿Qué jornada?", jornadas_disponibles)
+            jornada_actual_cl = partidos[0]["season"]["currentMatchday"]
+            indice_jornada_actual = jornadas_disponibles.index(jornada_actual_cl) if jornada_actual_cl in jornadas_disponibles else 0
+            jornada_buscada = st.selectbox(
+                "¿Qué jornada?",
+                index=indice_jornada_actual,
+            )
         else:
             jornada_buscada = None
+            jornada_actual_cl = None
     else:
         jornada_actual = partidos[0]["season"]["currentMatchday"]
         jornada_buscada = st.number_input(
@@ -75,8 +81,11 @@ with tab1:
             step=1,
             value=jornada_actual
         )
+        jornada_actual_cl = None
 
-    buscar = st.button("Buscar", key="buscar_jornada") or (codigo_competicion != "CL" and jornada_buscada == jornada_actual)
+    buscar = st.button("Buscar", key="buscar_jornada") or \
+        (codigo_competicion != "CL" and jornada_buscada == jornada_actual) or \
+        (codigo_competicion == "CL" and jornada_buscada == jornada_actual_cl)
 
     if buscar:
         if codigo_competicion == "CL":
@@ -133,7 +142,6 @@ with tab1:
             },
             hide_index=True,
             use_container_width=True,
-            height=600
         )
 
 equipo_favorito = "Real Madrid"
@@ -197,7 +205,6 @@ with tab2:
             },
             hide_index=True,
             use_container_width=True,
-            height=600
         )
 
 with tab3:
@@ -245,5 +252,4 @@ with tab3:
         },
         hide_index=True,
         use_container_width=True,
-        height=600
     )
