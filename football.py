@@ -59,60 +59,73 @@ with tab1:
             fases_disponibles,
             format_func=lambda fase: nombres_fases.get(fase, fase)
         )
+        if fase_elegida == "LEAGUE_STAGE":
+            jornadas_disponibles =sorted(set(
+                partido["matchday"] for partido in partidos if partido["stage"] == "LEAGUE_STAGE"
+            ))
+            jornada_buscada = st.selectbox("¿Que jornada?", jornadas_disponibles)
+        else:
+            jornada_buscada = None
     else:
         jornada_buscada = st.number_input("¿De qué jornada quieres ver los resultados?", min_value=1, max_value=38, step=1)
 
 if st.button("Buscar", key="buscar_jornada"):
+    if codigo_competicion == "CL":
+        st.subheader(nombres_fases.get(fase_elegida, fase_elegida))
+    else:
+        st.subheader(f"Jornada {jornada_buscada}")
+
+    filas = []
+
+    for partido in partidos:
         if codigo_competicion == "CL":
-            st.subheader(f"Jornada {fase_elegida}")
+            if jornada_buscada is not None:
+                coincide = partido["stage"] == fase_elegida and partido["matchday"] == jornada_buscada
+            else:
+                coincide = partido["stage"] == fase_elegida
         else:
-            st.subheader(f"Jornada {jornada_buscada}")
+            coincide = partido["matchday"] == jornada_buscada
 
-        filas = []
+        if coincide:
+            equipo_local = partido["homeTeam"]["name"]
+            equipo_visitante = partido["awayTeam"]["name"]
+            escudo_local = partido["homeTeam"]["crest"]
+            escudo_visitante = partido["awayTeam"]["crest"]
+            goles_local = partido["score"]["fullTime"]["home"]
+            goles_visitante = partido["score"]["fullTime"]["away"]
+            estado = partido["status"]
 
-        for partido in partidos:
-            coincide = (partido["stage"] == fase_elegida) if codigo_competicion == "CL" else (partido["matchday"] == jornada_buscada)
+            fecha = datetime.fromisoformat(partido["utcDate"])
+            dia_semana = dias_semana[fecha.weekday()]
+            fecha_legible = f"{dia_semana}, {fecha.strftime('%d/%m/%Y')}"
 
-            if coincide:
-                equipo_local = partido["homeTeam"]["name"]
-                equipo_visitante = partido["awayTeam"]["name"]
-                escudo_local = partido["homeTeam"]["crest"]
-                escudo_visitante = partido["awayTeam"]["crest"]
-                goles_local = partido["score"]["fullTime"]["home"]
-                goles_visitante = partido["score"]["fullTime"]["away"]
-                estado = partido["status"]
+            if estado == "FINISHED":
+                resultado = f"{goles_local} - {goles_visitante}"
+            elif estado == "TIMED":
+                resultado = "Fecha confirmada"
+            else:
+                resultado = "Fecha provisional"
 
-                fecha = datetime.fromisoformat(partido["utcDate"])
-                dia_semana = dias_semana[fecha.weekday()]
-                fecha_legible = f"{dia_semana}, {fecha.strftime('%d/%m/%Y')}"
+            filas.append({
+                "Fecha": fecha_legible,
+                "Escudo Local": escudo_local,
+                "Local": equipo_local,
+                "Resultado": resultado,
+                "Visitante": equipo_visitante,
+                "Escudo Visitante": escudo_visitante
+            })
 
-                if estado == "FINISHED":
-                    resultado = f"{goles_local} - {goles_visitante}"
-                elif estado == "TIMED":
-                    resultado = "Fecha confirmada"
-                else:
-                    resultado = "Fecha provisional"
-
-                filas.append({
-                    "Fecha": fecha_legible,
-                    "Escudo Local": escudo_local,
-                    "Local": equipo_local,
-                    "Resultado": resultado,
-                    "Visitante": equipo_visitante,
-                    "Escudo Visitante": escudo_visitante
-                })
-
-        tabla = pd.DataFrame(filas)
-        st.dataframe(
-            tabla,
-            column_config={
-                "Escudo Local": st.column_config.ImageColumn(" "),
-                "Escudo Visitante": st.column_config.ImageColumn(" ")
-            },
-            hide_index=True,
-            use_container_width=True,
-            height=600
-        )
+    tabla = pd.DataFrame(filas)
+    st.dataframe(
+        tabla,
+        column_config={
+            "Escudo Local": st.column_config.ImageColumn(" "),
+            "Escudo Visitante": st.column_config.ImageColumn(" ")
+        },
+        hide_index=True,
+        use_container_width=True,
+        height=600
+    )
 
 equipo_favorito = "Real Madrid"
 
