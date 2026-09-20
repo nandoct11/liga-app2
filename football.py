@@ -1,4 +1,3 @@
-#streamlit run football.py
 import requests
 from datetime import datetime
 import streamlit as st
@@ -10,7 +9,7 @@ dias_semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", 
 
 st.title("Resultados La Liga")
 
-token = "db0a169606a74dad8d77aefbb477156f"
+token = st.secrets["API_TOKEN"]
 cabeceras = {"X-Auth-Token": token}
 
 @st.cache_data(ttl=600)
@@ -28,18 +27,12 @@ def obtener_clasificacion():
 partidos = obtener_partidos()
 tabla_posiciones_completa = obtener_clasificacion()
 
-st.write(f"Partidos totales recibidos: {len(partidos)}")
+tab1, tab2, tab3 = st.tabs(["Por jornada", "Por equipo", "Clasificación"])
 
-tipo_busqueda = st.radio("¿Cómo quieres buscar?", ["Por jornada", "Por equipo", "Clasificación"])
-
-
-#POR JORNADA
-
-
-if tipo_busqueda == "Por jornada":
+with tab1:
     jornada_buscada = st.number_input("¿De qué jornada quieres ver los resultados?", min_value=1, max_value=38, step=1)
 
-    if st.button("Buscar"):
+    if st.button("Buscar", key="buscar_jornada"):
         st.subheader(f"Jornada {jornada_buscada}")
 
         filas = []
@@ -87,15 +80,11 @@ if tipo_busqueda == "Por jornada":
             height=600
         )
 
-
-#POR EQUIPO
-
-
-elif tipo_busqueda == "Por equipo":
+with tab2:
     nombres_equipos = sorted([equipo["team"]["name"] for equipo in tabla_posiciones_completa])
     equipo_buscado = st.selectbox("¿De qué equipo quieres ver los resultados?", nombres_equipos)
 
-    if st.button("Buscar"):
+    if st.button("Buscar", key="buscar_equipo"):
         filas = []
 
         for partido in partidos:
@@ -144,18 +133,12 @@ elif tipo_busqueda == "Por equipo":
             height=600
         )
 
-
-#CLASIFICACIÓN
-
-
-elif tipo_busqueda == "Clasificación":
+with tab3:
     st.subheader("Clasificación La Liga")
-
-    tabla_posiciones = tabla_posiciones_completa
 
     filas = []
 
-    for equipo in tabla_posiciones:
+    for equipo in tabla_posiciones_completa:
         filas.append({
             "Pos": equipo["position"],
             "Escudo": equipo["team"]["crest"],
@@ -170,19 +153,20 @@ elif tipo_busqueda == "Clasificación":
         })
 
     tabla = pd.DataFrame(filas)
+
     def colorear_fila(fila):
         posicion = fila["Pos"]
         if posicion <= 4:
-            color = "background-color: #1e5631"  # verde oscuro - Champions League
+            color = "background-color: #1e5631"
         elif posicion == 5:
-            color = "background-color: #4a4a1e"  # amarillo oscuro - Europa League
+            color = "background-color: #4a4a1e"
         elif posicion >= 18:
-            color = "background-color: #5c1e1e"  # rojo oscuro - descenso
+            color = "background-color: #5c1e1e"
         else:
             color = ""
         return [color] * len(fila)
 
-    tabla_coloreada = tabla.style.apply(colorear_fila, axis=1)  # NUEVO
+    tabla_coloreada = tabla.style.apply(colorear_fila, axis=1)
 
     st.dataframe(
         tabla_coloreada,
@@ -193,7 +177,3 @@ elif tipo_busqueda == "Clasificación":
         use_container_width=True,
         height=600
     )
-    st.subheader("Puntos por equipo")
-
-    tabla_grafico = tabla.set_index("Equipo")["Pts"].sort_values(ascending=False)
-    st.bar_chart(tabla_grafico)
